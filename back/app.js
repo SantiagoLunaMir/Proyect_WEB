@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const healthRouter = require('./routes/health');
-
+const piecesRouter = require('./routes/pieces');
 const app = express();
 
 // Middlewares
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/health', healthRouter);
-
+app.use('/api/pieces', piecesRouter);
 // Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
