@@ -5,23 +5,31 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const healthRouter = require('./routes/health');
+const authRouter   = require('./routes/auth');
+const usersRouter  = require('./routes/users');
+const doctorsRouter= require('./routes/doctors');
 const piecesRouter = require('./routes/pieces');
+
 const app = express();
 
-// Middlewares
+// Middlewares globales
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// Rutas públicas
 app.use('/health', healthRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/doctors', doctorsRouter);
 app.use('/api/pieces', piecesRouter);
+
 // Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB conectado'))
   .catch(err => console.error('❌ Error MongoDB:', err));
 
-// Levantar servidor
+// Arranca el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Backend escuchando en http://localhost:${PORT}`);
