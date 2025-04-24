@@ -9,6 +9,8 @@ const authRouter   = require('./routes/auth');
 const usersRouter  = require('./routes/users');
 const doctorsRouter= require('./routes/doctors');
 const piecesRouter = require('./routes/pieces');
+const worksRouter  = require('./routes/works'); 
+const deliveriesRouter = require('./routes/deliveries');
 
 const app = express();
 
@@ -21,8 +23,9 @@ app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/doctors', doctorsRouter);
+app.use('/api/works', worksRouter);
 app.use('/api/pieces', piecesRouter);
-
+app.use('/api/deliveries', deliveriesRouter);
 // Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)

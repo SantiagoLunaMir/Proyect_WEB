@@ -21,5 +21,13 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = function(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
+userSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (_doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+  }
+});
 
 module.exports = mongoose.model('User', userSchema);

@@ -1,24 +1,26 @@
 const jwt = require('jsonwebtoken');
 
-// Verifica que haya un token y sea válido
-function verifyToken(req, res, next) {
-  const header = req.header('Authorization');
-  if (!header) return res.status(401).json({ error: 'No token provided' });
-  const token = header.split(' ')[1];
+// Middleware para validar JWT y extraer req.user = { id, role }
+exports.verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const token = authHeader.split(' ')[1];
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // payload debe contener { id, role }
     req.user = { id: payload.id, role: payload.role };
     next();
-  } catch {
-    res.status(401).json({ error: 'Invalid token' });
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
-}
-
-// Generador de middleware para roles
-const requireRole = (roles) => (req, res, next) => {
-  if (!req.user || !roles.includes(req.user.role))
-    return res.status(403).json({ error: 'Forbidden' });
-  next();
 };
 
-module.exports = { verifyToken, requireRole };
+// Middleware para comprobar que el usuario tiene alguno de los roles permitidos
+exports.requireRole = (roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
