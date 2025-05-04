@@ -1,33 +1,40 @@
 // back/routes/doctors.js
-const { Router }            = require('express');
-const Doctor                = require('../models/Doctor');
+const { Router } = require('express');
+const Doctor     = require('../models/Doctor');
 const { verifyToken, requireRole } = require('../middleware/auth');
-const router                = Router();
+const router     = Router();
 
-// GET /api/doctors  (authenticated roles: admin, technician, delivery)
-router.get(
-  '/',
-  verifyToken,
-  requireRole(['admin','technician','delivery']),
-  async (req, res) => {
-    try {
-      const docs = await Doctor.find();
-      res.json(docs);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+// GET /api/doctors — público
+router.get('/', async (req, res) => {
+  try {
+    const doctors = await Doctor.find();
+    res.json(doctors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-);
+});
 
-// POST /api/doctors  (admin only)
+// GET /api/doctors/:id — público
+router.get('/:id', async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+    if (!doctor) return res.status(404).json({ error: 'Doctor no encontrado' });
+    res.json(doctor);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/doctors — solo admin
 router.post(
-  '/',
-  verifyToken,
-  requireRole(['admin']),
+  '/', 
+  verifyToken, 
+  requireRole(['admin']), 
   async (req, res) => {
+    const { name, specialty, contactInfo, address, notes } = req.body;
     try {
-      const newDoc = new Doctor(req.body);
-      const saved  = await newDoc.save();
+      const doctor = new Doctor({ name, specialty, contactInfo, address, notes });
+      const saved = await doctor.save();
       res.status(201).json(saved);
     } catch (err) {
       res.status(400).json({ error: err.message });
@@ -35,16 +42,17 @@ router.post(
   }
 );
 
-// PUT /api/doctors/:id  (admin only)
+// PUT /api/doctors/:id — solo admin
 router.put(
-  '/:id',
-  verifyToken,
-  requireRole(['admin']),
+  '/:id', 
+  verifyToken, 
+  requireRole(['admin']), 
   async (req, res) => {
+    const { name, specialty, contactInfo, address, notes } = req.body;
     try {
       const updated = await Doctor.findByIdAndUpdate(
         req.params.id,
-        req.body,
+        { name, specialty, contactInfo, address, notes },
         { new: true, runValidators: true }
       );
       if (!updated) return res.status(404).json({ error: 'Doctor no encontrado' });
@@ -55,16 +63,16 @@ router.put(
   }
 );
 
-// DELETE /api/doctors/:id  (admin only)
+// DELETE /api/doctors/:id — solo admin
 router.delete(
-  '/:id',
-  verifyToken,
-  requireRole(['admin']),
+  '/:id', 
+  verifyToken, 
+  requireRole(['admin']), 
   async (req, res) => {
     try {
       const deleted = await Doctor.findByIdAndDelete(req.params.id);
       if (!deleted) return res.status(404).json({ error: 'Doctor no encontrado' });
-      res.json({ message: 'Doctor eliminado' });
+      res.json({ message: 'Doctor eliminado correctamente' });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

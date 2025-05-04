@@ -6,6 +6,7 @@ const doctorSchema = new Schema({
   name:        { type: String, required: true },
   specialty:   { type: String, required: true },
   contactInfo: { type: String },
+  address:     { type: String, required: true },    // ← Ahora obligatorio
   notes:       { type: String }
 }, { timestamps: true });
 

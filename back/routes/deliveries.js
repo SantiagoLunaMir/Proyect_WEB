@@ -15,32 +15,19 @@ router.get(
         ? { driverId: req.user.id }
         : {};
       const list = await Delivery.find(filter)
-        .populate('workId', 'productionTime deliveryDate cost status')
+        // Populamos workId y dentro de éste al doctor
+        .populate({
+          path: 'workId',
+          select: 'productionTime deliveryDate cost status doctorId',
+          populate: {
+            path: 'doctorId',
+            select: 'name address contactInfo'
+          }
+        })
         .populate('driverId', 'name email');
       res.json(list);
     } catch (err) {
       res.status(500).json({ error: err.message });
-    }
-  }
-);
-
-// PATCH /api/deliveries/:id — driver marks delivered & amount
-router.patch(
-  '/:id',
-  verifyToken,
-  requireRole(['delivery']),
-  async (req, res) => {
-    try {
-      const { status, amountCollected } = req.body;
-      const updated = await Delivery.findByIdAndUpdate(
-        req.params.id,
-        { status, amountCollected },
-        { new: true, runValidators: true }
-      );
-      if (!updated) return res.status(404).json({ error: 'Delivery not found' });
-      res.json(updated);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
     }
   }
 );
