@@ -1,35 +1,58 @@
 // back/routes/deliveries.js
 const { Router } = require('express');
-const Delivery   = require('../models/Delivery');
+const Delivery  = require('../models/Delivery');
+const Work      = require('../models/Work');
 const { verifyToken, requireRole } = require('../middleware/auth');
-const router     = Router();
+const router = Router();
 
-// GET /api/deliveries — driver/admin
-router.get(
-  '/',
-  verifyToken,
-  requireRole(['delivery','admin']),
-  async (req, res) => {
-    try {
-      const filter = req.user.role === 'delivery'
-        ? { driverId: req.user.id }
-        : {};
-      const list = await Delivery.find(filter)
-        // Populamos workId y dentro de éste al doctor
-        .populate({
-          path: 'workId',
-          select: 'productionTime deliveryDate cost status doctorId',
-          populate: {
-            path: 'doctorId',
-            select: 'name address contactInfo'
-          }
-        })
-        .populate('driverId', 'name email');
-      res.json(list);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-);
+/* ---------- ASIGNAR trabajos al repartidor ---------- */
+router.post('/assign', verifyToken, requireRole(['delivery','admin']), async (req,res)=>{
+  const { workIds } = req.body;
+  if (!Array.isArray(workIds) || !workIds.length)
+    return res.status(400).json({ error:'workIds requerido' });
+
+  // evita duplicados
+  const ya = await Delivery.find({ workId:{ $in: workIds }, status:'pending' }).distinct('workId');
+  const libres = workIds.filter(id => !ya.includes(id));
+  if (!libres.length) return res.status(400).json({ error:'Ya asignados' });
+
+  const deliveries = await Promise.all(
+    libres.map(id => Delivery.create({ workId:id, driverId:req.user.id }))
+  );
+
+  // (opcional) cambiar status visual en Work
+  await Work.updateMany({ _id:{ $in: libres } }, { status:'outForDelivery' });
+
+  res.status(201).json(deliveries);
+});
+
+/* ---------- ENTREGAS PENDIENTES DEL CONDUCTOR ---------- */
+router.get('/my', verifyToken, requireRole(['delivery','admin']), async (req,res)=>{
+  const list = await Delivery.find({ driverId:req.user.id, status:'pending' })
+    .populate({
+      path:'workId',
+      populate:[
+        { path:'pieceId',  select:'name' },
+        { path:'doctorId', select:'name address' }
+      ]
+    });
+  res.json(list);
+});
+
+/* ---------- MARCAR ENTREGADO ---------- */
+router.put('/:id/delivered', verifyToken, requireRole(['delivery','admin']), async (req,res)=>{
+  const d = await Delivery.findById(req.params.id).populate('workId');
+  if (!d || d.driverId.toString() !== req.user.id && req.user.role!=='admin')
+    return res.status(404).json({ error:'No encontrado' });
+
+  d.status = 'delivered';
+  d.amountCollected = req.body.amountCollected ?? d.amountCollected;
+  await d.save();
+
+  d.workId.status = 'completed';
+  await d.workId.save();
+
+  res.json({ message:'Entregado' });
+});
 
 module.exports = router;
