@@ -1,58 +1,49 @@
 // back/routes/auth.js
 const { Router } = require('express');
-const router = Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const router = require('express').Router();
 
-// Registro
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    if (await User.findOne({ email }))
-      return res.status(400).json({ error: 'User exists' });
-    const user = new User({ name, email, password, role });
-    await user.save();
-    res.status(201).json({ message: 'Registered' });
+    const { name, email, password, phone, address, roleRequested } = req.body;
+    if (!name || !email || !password)
+      return res.status(400).json({ error: 'Datos incompletos' });
+
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(409).json({ error: 'Email ya registrado' });
+
+    const user = await User.create({
+      name, email, password, phone, address,
+      roleRequested,
+      role: 'pending',   // siempre pendiente
+      approved: false
+    });
+
+    res.status(201).json({ message: 'Solicitud enviada, espere aprobación' });
   } catch (err) {
-    console.error('❌ Error en registro:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Login
+/* LOGIN ------------------------------------------------------- */
 router.post('/login', async (req, res) => {
-  try {
-    console.log('📥 Datos recibidos en login:', req.body); // Log entrada
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
 
-    const { email, password } = req.body;
+  if (user.role !== 'admin' && !user.approved)
+    return res.status(401).json({ error: 'Cuenta pendiente de aprobación' });
 
-    const user = await User.findOne({ email });
-    console.log('🔎 Usuario encontrado:', user);
+  const ok = await user.comparePassword(password);
+  if (!ok) return res.status(401).json({ error: 'Credenciales inválidas' });
 
-    if (!user) {
-      console.warn('⚠️ Usuario no encontrado');
-      return res.status(400).json({ error: 'Bad credentials' });
-    }
-
-    const passwordMatch = await user.comparePassword(password);
-    console.log('🔐 Contraseña coincide:', passwordMatch);
-
-    if (!passwordMatch) {
-      console.warn('⚠️ Contraseña incorrecta');
-      return res.status(400).json({ error: 'Bad credentials' });
-    }
-
-    const payload = { id: user._id, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
-
-    res.json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
-  } catch (err) {
-    console.error('❌ Error interno en login:', err);
-    res.status(500).json({ error: err.message });
-  }
+  const token = jwt.sign(
+    { id: user._id, role: user.role, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+  res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
 });
 
 module.exports = router;

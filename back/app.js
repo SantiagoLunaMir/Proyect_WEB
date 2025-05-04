@@ -1,15 +1,16 @@
 // back/app.js
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+const express   = require('express');
+const mongoose  = require('mongoose');
+const cors      = require('cors');
+const path      = require('path');
 
-const healthRouter = require('./routes/health');
-const authRouter   = require('./routes/auth');
-const usersRouter  = require('./routes/users');
-const doctorsRouter= require('./routes/doctors');
-const piecesRouter = require('./routes/pieces');
-const worksRouter  = require('./routes/works'); 
+const healthRouter     = require('./routes/health');
+const authRouter       = require('./routes/auth');
+const usersRouter      = require('./routes/users');
+const doctorsRouter    = require('./routes/doctors');
+const piecesRouter     = require('./routes/pieces');
+const worksRouter      = require('./routes/works'); 
 const deliveriesRouter = require('./routes/deliveries');
 
 const app = express();
@@ -17,6 +18,9 @@ const app = express();
 // Middlewares globales
 app.use(cors());
 app.use(express.json());
+
+// Servir estáticos: carpeta 'uploads' para las imágenes
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rutas públicas
 app.use('/health', healthRouter);
@@ -26,6 +30,7 @@ app.use('/api/doctors', doctorsRouter);
 app.use('/api/works', worksRouter);
 app.use('/api/pieces', piecesRouter);
 app.use('/api/deliveries', deliveriesRouter);
+
 // Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
