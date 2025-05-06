@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface PublicPiece {
   _id: string;
   name: string;
+  description: string;
   price: number;
   estimatedTime: number;
   images: string[];

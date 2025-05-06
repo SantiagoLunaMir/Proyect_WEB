@@ -1,14 +1,15 @@
+// frontend/src/app/catalog/piece-detail.component.ts
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { CatalogService, PublicPiece } from './catalog.service';
+import { CommonModule }    from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { CatalogService, PublicPiece } from '../services/catalog.service';
 
 @Component({
   selector: 'app-piece-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './piece-detail.component.html',
-  styleUrls: []
+  styleUrls: ['./piece-detail.component.css']
 })
 export class PieceDetailComponent implements OnInit {
   private svc   = inject(CatalogService);

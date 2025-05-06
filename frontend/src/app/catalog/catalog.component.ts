@@ -1,15 +1,16 @@
+// frontend/src/app/catalog/catalog.component.ts
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule }  from '@angular/forms';
+import { CommonModule }       from '@angular/common';
+import { FormsModule }        from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { CatalogService, PublicPiece } from './catalog.service';
+import { CatalogService, PublicPiece } from '../services/catalog.service';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './catalog.component.html',
-  styleUrls: []
+  styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent implements OnInit {
   private svc = inject(CatalogService);
