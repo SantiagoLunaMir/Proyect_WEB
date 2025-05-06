@@ -13,6 +13,16 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}_${base}${ext}`);
   }
 });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },        // límite 5 MB
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Sólo se permiten imágenes'), false);
+    }
+    cb(null, true);
+  }
+});
 
 // Solo PNG/JPG ≤ 5 MB
 function fileFilter(_req, file, cb) {

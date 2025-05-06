@@ -7,6 +7,7 @@ const Piece      = require('../models/Piece');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const { param } = require('express-validator');
 const validate    = require('../middleware/validate');
+
 // 1) Configuración de almacenamiento con multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
