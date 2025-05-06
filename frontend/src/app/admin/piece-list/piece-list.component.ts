@@ -10,7 +10,7 @@ import { Piece, PieceService } from '../../services/piece.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './piece-list.component.html',
-  styleUrls: []
+  styleUrls: ['./piece-list.component.css']
 })
 export class PieceListComponent implements OnInit {
   pieces: Piece[] = [];
@@ -21,12 +21,10 @@ export class PieceListComponent implements OnInit {
     private router: Router
   ) {}
 
-  /* ---------- ciclo de vida ---------- */
   ngOnInit(): void {
     this.loadPieces();
   }
 
-  /* ---------- helpers ---------- */
   loadPieces(): void {
     this.loading = true;
     this.pieceSvc.getPieces().subscribe({
@@ -34,6 +32,11 @@ export class PieceListComponent implements OnInit {
       error: err => console.error('Error al cargar piezas:', err),
       complete: () => (this.loading = false)
     });
+  }
+
+  /** Navegar a la vista de detalle público/admin */
+  viewDetail(id: string): void {
+    this.router.navigate(['/admin/pieces/edit', id]);
   }
 
   edit(id: string): void {
@@ -45,11 +48,10 @@ export class PieceListComponent implements OnInit {
     this.pieceSvc.deletePiece(id).subscribe(() => this.loadPieces());
   }
 
-  /* ---------- NUEVO: toggle publicar ---------- */
   onTogglePublish(piece: Piece): void {
-    const targetState = !piece.isPublic;
-    this.pieceSvc.togglePublish(piece._id!, targetState).subscribe({
-      next: () => (piece.isPublic = targetState),
+    const target = !piece.isPublic;
+    this.pieceSvc.togglePublish(piece._id!, target).subscribe({
+      next: () => (piece.isPublic = target),
       error: err => console.error(err)
     });
   }

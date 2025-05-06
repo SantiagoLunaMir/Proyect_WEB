@@ -1,18 +1,3 @@
+<!-- src/app/app.component.html -->
 <app-nav-menu></app-nav-menu>
-
-<nav class="navbar">
-    <a routerLink="/" class="logo">DentalPortal</a>
-    <div class="spacer"></div>
-    <ng-container *ngIf="user$ | async as user; else anon">
-      <span class="logged-as">
-        Conectado como: <strong>{{ user.name }}</strong> ({{ user.role }})
-      </span>
-      <button (click)="logout()">Logout</button>
-    </ng-container>
-    <ng-template #anon>
-      <a routerLink="/login">Login</a>
-    </ng-template>
-</nav>
-  
 <router-outlet></router-outlet>
-  

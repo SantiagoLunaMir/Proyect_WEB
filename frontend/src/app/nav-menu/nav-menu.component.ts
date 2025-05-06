@@ -16,11 +16,11 @@ interface MenuItem {
   imports: [ CommonModule, RouterLink ],
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css'],
-  host: { class: 'nav-menu' }    
+  host: { class: 'nav-menu' }
 })
 export class NavMenuComponent {
   user$: Observable<User|null>;
-  open = false;                       // ← controla el despliegue
+  open = false;                       // controla el despliegue
 
   menu: MenuItem[] = [
     { label: 'Home',           path: '/',                roles: ['admin','technician','delivery','guest'] },
@@ -37,7 +37,9 @@ export class NavMenuComponent {
     this.user$ = this.auth.user$;
   }
 
-  toggle(): void { this.open = !this.open; }
+  toggle(): void {
+    this.open = !this.open;
+  }
 
   allowedItems(user: User|null): MenuItem[] {
     const role = user?.role ?? 'guest';
