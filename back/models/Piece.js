@@ -1,13 +1,25 @@
 // back/models/Piece.js
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const { Schema, model } = require('mongoose');
 
-const pieceSchema = new Schema({
-  name:             { type: String, required: true },
-  description:      { type: String },
-  estimatedTime:    { type: String },
-  technicianContact:{ type: String },
-  images:           [{ type: String }],   // ← array de URLs o rutas
-}, { timestamps: true });
+const PieceSchema = new Schema(
+  {
+    name:          { type: String, required: true, trim: true },
+    description:   String,
+    price:         { type: Number, min: 0 },
+    estimatedTime: { type: Number, min: 1 },   // días
+    technicianContact: String,
+    images:        [{ type: String }],
 
-module.exports = model('Piece', pieceSchema);
+    /* catálogo */
+    isPublic: { type: Boolean, default: false }
+  },
+  { timestamps: true }
+);
+
+/* Índices */
+PieceSchema.index({ isPublic: 1 });
+PieceSchema.index({ name: 'text', description: 'text' });
+PieceSchema.index({ price: 1 });
+PieceSchema.index({ estimatedTime: 1 });
+
+module.exports = model('Piece', PieceSchema);

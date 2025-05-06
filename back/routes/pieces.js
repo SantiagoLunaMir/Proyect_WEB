@@ -5,7 +5,8 @@ const path       = require('path');
 const multer     = require('multer');
 const Piece      = require('../models/Piece');
 const { verifyToken, requireRole } = require('../middleware/auth');
-
+const { param } = require('express-validator');
+const validate    = require('../middleware/validate');
 // 1) Configuración de almacenamiento con multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -109,6 +110,23 @@ router.delete(
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  }
+);
+
+router.patch(
+  '/:id/publish',
+  verifyToken,
+  requireRole(['admin']),
+  [param('id').isMongoId()],
+  validate,
+  async (req, res) => {
+    const piece = await Piece.findByIdAndUpdate(
+      req.params.id,
+      { isPublic: !!req.body.isPublic },
+      { new: true }
+    );
+    if (!piece) return res.status(404).json({ error: 'Pieza no encontrada' });
+    res.json({ message: 'Estado actualizado', isPublic: piece.isPublic });
   }
 );
 

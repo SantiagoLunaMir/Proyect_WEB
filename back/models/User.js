@@ -1,29 +1,40 @@
-const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
-const { Schema, model } = mongoose;
+// back/models/User.js
+const { Schema, model } = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const userSchema = new Schema({
-  name:     { type: String, required: true },
-  email:    { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  phone:    { type: String },
-  address:  { type: String },
+const UserSchema = new Schema(
+  {
+    name:     { type: String, required: true, trim: true },
+    email:    { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true, minlength: 8 },
 
-  // Nuevo flujo de aprobación
-  roleRequested: { type: String, enum: ['technician', 'delivery'], default: 'technician' },
-  role:          { type: String, enum: ['admin','technician','delivery','pending'], default: 'pending' },
-  approved:      { type: Boolean, default: false },
-  rejected:      { type: Boolean, default: false }
-}, { timestamps: true });
+    phone:    String,
+    address:  String,
 
-userSchema.pre('save', async function (next) {
+    /* --- Flujo de aprobación --- */
+    roleRequested: { type: String, enum: ['technician', 'delivery'], required: true },
+    role:          { type: String, enum: ['admin', 'technician', 'delivery', 'pending'], default: 'pending' },
+    approved:      { type: Boolean, default: false },
+    rejected:      { type: Boolean, default: false }
+  },
+  { timestamps: true }
+);
+
+/* ---------- Hooks ---------- */
+UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-userSchema.methods.comparePassword = function (pwd) {
-  return bcrypt.compare(pwd, this.password);
+/* ---------- Métodos ---------- */
+UserSchema.methods.comparePassword = function (plain) {
+  return bcrypt.compare(plain, this.password);
 };
 
-module.exports = model('User', userSchema);
+/* ---------- Índices ---------- */
+UserSchema.index({ email: 1 });
+UserSchema.index({ role: 1 });
+UserSchema.index({ approved: 1 });
+
+module.exports = model('User', UserSchema);
