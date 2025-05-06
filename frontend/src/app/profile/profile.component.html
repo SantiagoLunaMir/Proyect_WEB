@@ -1,0 +1,35 @@
+<h2>Mi perfil</h2>
+
+<!-- Esperamos a que user esté definido antes de renderizar el formulario -->
+<form *ngIf="user" (ngSubmit)="save()" #f="ngForm">
+  <label>Nombre:
+    <input [(ngModel)]="form.name" name="name" required />
+  </label>
+
+  <label>Email:
+    <!-- Safe-navigation para no romper si aún no hay user -->
+    <input [value]="user?.email" disabled />
+  </label>
+
+  <label>Teléfono:
+    <input [(ngModel)]="form.phone" name="phone" />
+  </label>
+
+  <label>Dirección:
+    <input [(ngModel)]="form.address" name="address" />
+  </label>
+
+  <fieldset>
+    <legend>Cambiar contraseña (opcional)</legend>
+    <label>Nueva contraseña:
+      <input type="password" [(ngModel)]="form.password" name="password" />
+    </label>
+    <label>Confirmar:
+      <input type="password" [(ngModel)]="form.confirm" name="confirm" />
+    </label>
+  </fieldset>
+
+  <button type="submit" [disabled]="f.invalid">Guardar</button>
+</form>
+
+<p>{{ msg }}</p>

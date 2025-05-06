@@ -1,0 +1,55 @@
+<!-- frontend/src/app/tech/work-form.component.html -->
+<h1>{{ editMode ? 'Editar' : 'Nuevo' }} Trabajo</h1>
+<form (ngSubmit)="submit()">
+  <label>
+    Pieza:
+    <select [(ngModel)]="form.pieceId" name="pieceId" required>
+      <option *ngFor="let p of pieces" [value]="p._id">{{ p.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Doctor:
+    <select [(ngModel)]="form.doctorId" name="doctorId" required>
+      <option *ngFor="let d of doctors" [value]="d._id">{{ d.name }}</option>
+    </select>
+  </label>
+
+  <label>
+    Fecha de entrega:
+    <input
+      type="date"
+      [(ngModel)]="form.deliveryDate"
+      name="deliveryDate"
+      required
+    />
+  </label>
+
+  <label>
+    Tiempo producción:
+    <input
+      type="text"
+      [(ngModel)]="form.productionTime"
+      name="productionTime"
+      required
+    />
+  </label>
+
+  <label>
+    Costo:
+    <input type="number" [(ngModel)]="form.cost" name="cost" required />
+  </label>
+
+  <label>
+    Estado:
+    <select [(ngModel)]="form.status" name="status">
+      <option value="pending">Pendiente</option>
+      <option value="inProgress">En Proceso</option>
+      <option value="completed">Completado</option>
+    </select>
+  </label>
+
+  <button type="submit">
+    {{ editMode ? 'Actualizar' : 'Crear' }}
+  </button>
+</form>

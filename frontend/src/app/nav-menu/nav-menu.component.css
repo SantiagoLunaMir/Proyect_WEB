@@ -1,0 +1,58 @@
+/* ===== enlaces y botones ===== */
+a,
+button {
+  color: var(--ort-blue, #00a7e1);
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  border: none;
+}
+
+a:hover,
+button:hover {
+  text-decoration: underline;
+}
+
+button { cursor: pointer; }
+
+/* ===== lista horizontal por defecto ===== */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+/* ===== botón hamburguesa ===== */
+.burger {
+  display: none;              /* visible sólo en móvil */
+  font-size: 1.6rem;
+  background: none;
+  border: none;
+  color: var(--ort-white, #00a7e1);
+  cursor: pointer;
+}
+
+/* ===== pantalla ≤ 768 px ===== */
+@media (max-width: 768px) {
+  .burger { display: block; }
+
+  ul {
+    position: absolute;
+    top: 56px;                /* debajo de tu barra superior */
+    right: 0;
+    width: 220px;
+    flex-direction: column;
+    background: var(--ort-white, #fff);
+    padding: 1rem;
+    border-left: 1px solid var(--ort-gray, #d1d5db);
+    border-bottom: 1px solid var(--ort-gray, #d1d5db);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    transform: translateX(100%);      /* oculto por defecto */
+    transition: transform 0.25s ease;
+    gap: 0.75rem;
+  }
+
+  ul.open { transform: translateX(0); } /* visible */
+}

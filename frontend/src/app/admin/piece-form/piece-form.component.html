@@ -1,0 +1,36 @@
+<!-- frontend/src/app/admin/piece-form/piece-form.component.html -->
+<h1>{{ editMode ? 'Editar' : 'Nueva' }} Pieza</h1>
+<form (ngSubmit)="submit()">
+  <label>
+    Nombre:
+    <input [(ngModel)]="form.name" name="name" required />
+  </label>
+  <label>
+    Descripción:
+    <textarea [(ngModel)]="form.description" name="description"></textarea>
+  </label>
+  <label>
+    Tiempo estimado:
+    <input [(ngModel)]="form.estimatedTime" name="estimatedTime" />
+  </label>
+  <label>
+    Contacto técnico:
+    <input [(ngModel)]="form.technicianContact" name="technicianContact" />
+  </label>
+
+  <label>
+    Imágenes (max 8):
+    <input type="file" (change)="onFileChange($event)" multiple accept="image/*" />
+  </label>
+
+  <div *ngIf="existingImages.length">
+    <p>Imágenes actuales:</p>
+    <div *ngFor="let url of existingImages">
+      <img [src]="url" alt="Pieza" style="max-width: 100px; margin: 5px;" />
+    </div>
+  </div>
+
+  <button type="submit">
+    {{ editMode ? 'Actualizar' : 'Crear' }}
+  </button>
+</form>

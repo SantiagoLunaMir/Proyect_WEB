@@ -1,0 +1,22 @@
+<nav>
+  <!-- Botón hamburguesa -->
+  <button class="burger" (click)="toggle()">☰</button>
+
+  <!-- Lista con enlaces -->
+  <ng-container *ngIf="(user$ | async) as user; else guest">
+    <ul [class.open]="open">
+      <li *ngFor="let item of allowedItems(user)">
+        <a [routerLink]="item.path" (click)="open=false">{{ item.label }}</a>
+      </li>
+      <li><button (click)="logout()">Logout</button></li>
+    </ul>
+  </ng-container>
+
+  <!-- visitante -->
+  <ng-template #guest>
+    <ul [class.open]="open">
+      <li><a routerLink="/login" (click)="open=false">Iniciar sesión</a></li>
+      <li><a routerLink="/register" (click)="open=false">Registrarse</a></li>
+    </ul>
+  </ng-template>
+</nav>

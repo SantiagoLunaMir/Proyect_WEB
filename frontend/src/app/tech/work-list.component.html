@@ -1,0 +1,30 @@
+<!-- frontend/src/app/tech/work-list.component.html -->
+<h1>Mis Trabajos</h1>
+<div class="toolbar">
+  <button routerLink="/tech/works/new">+ Nuevo trabajo</button>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Pieza</th>
+      <th>Doctor</th>
+      <th>Entrega</th>
+      <th>Costo</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let w of works">
+      <td>{{ w.pieceId.name }}</td>
+      <td>{{ w.doctorId.name }}</td>
+      <td>{{ w.deliveryDate | date }}</td>
+      <td>{{ w.cost }}</td>
+      <td>{{ w.status }}</td>
+      <td>
+        <a [routerLink]="['/tech/works/edit', w._id]">Editar</a>
+        <button (click)="delete(w._id!)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

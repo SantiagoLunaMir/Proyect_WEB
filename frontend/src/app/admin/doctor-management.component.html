@@ -1,0 +1,52 @@
+<h1>Gestión de Doctores</h1>
+
+<form (ngSubmit)="submit()">
+  <label>
+    Nombre:
+    <input [(ngModel)]="form.name" name="name" required />
+  </label>
+  <label>
+    Especialidad:
+    <input [(ngModel)]="form.specialty" name="specialty" required />
+  </label>
+  <label>
+    Contacto:
+    <input [(ngModel)]="form.contactInfo" name="contactInfo" />
+  </label>
+  <label>
+    Dirección:
+    <input [(ngModel)]="form.address" name="address" required />
+  </label>
+  <label>
+    Notas:
+    <input [(ngModel)]="form.notes" name="notes" />
+  </label>
+  <button type="submit">{{ editMode ? 'Actualizar' : 'Crear' }}</button>
+  <button type="button" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
+</form>
+
+<hr>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Especialidad</th>
+      <th>Contacto</th>
+      <th>Dirección</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let d of doctors">
+      <td>{{ d.name }}</td>
+      <td>{{ d.specialty }}</td>
+      <td>{{ d.contactInfo }}</td>
+      <td>{{ d.address }}</td>
+      <td>
+        <button (click)="edit(d)">Editar</button>
+        <button (click)="delete(d._id!)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
