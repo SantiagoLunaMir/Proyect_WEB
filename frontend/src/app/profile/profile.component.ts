@@ -9,7 +9,8 @@ import { AuthService, User } from '../services/auth.service';
   standalone: true,
   selector: 'app-profile',
   imports: [CommonModule, FormsModule],
-  templateUrl: './profile.component.html'
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   user?: User;
