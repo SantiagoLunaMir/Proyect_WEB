@@ -1,3 +1,4 @@
+// frontend/src/app/tech/work-form.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +20,7 @@ export class WorkFormComponent implements OnInit {
     productionTime: '',
     deliveryDate: '',
     cost: 0,
-    status: 'pending'
+    status: 'pendiente'
   };
   pieces: Piece[] = [];
   doctors: Doctor[] = [];

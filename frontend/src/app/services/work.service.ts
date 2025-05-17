@@ -10,7 +10,7 @@ export interface WorkRequest {
   productionTime?: string;  // Optional
   deliveryDate?: string;    // Optional
   cost?: number;            // Optional
-  status: 'pending' | 'inProgress' | 'completed';  // Required
+  status: 'pendiente' | 'enProgreso' | 'completado';  // Required
 }
 
 // Modelo que recibimos del back (populate) con objetos anidados
@@ -22,7 +22,7 @@ export interface Work {
   deliveryDate?: string;
   productionTime?: string;
   cost?: number;
-  status: 'pending' | 'inProgress' | 'completed';  // optional here, but required for back
+  status: 'pendiente' | 'enProgreso' | 'completado';  // optional here, but required for back
 }
 
 @Injectable({ providedIn: 'root' })
@@ -45,7 +45,7 @@ export class WorkService {
   deleteWork(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.api}/${id}`);
   }
-  updateStatus(id: string, status: 'doing' | 'done') {
+  updateStatus(id: string, status: 'laborando' | 'hecho') {
     return this.http.patch<{ message:string; status:string }>(
       `${this.api}/${id}/status`,
       { status }

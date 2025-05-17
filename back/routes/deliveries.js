@@ -19,7 +19,7 @@ router.post(
 
     const ya = await Delivery.find({
       workId: { $in: workIds },
-      status: 'pending'
+      status: 'pendiente'
     }).distinct('workId');
 
     const libres = workIds.filter(id => !ya.includes(id));
@@ -29,10 +29,9 @@ router.post(
       libres.map(id => Delivery.create({ workId: id, driverId: req.user.id }))
     );
 
-    // Opcional: actualizar estado en Work
     await Work.updateMany(
       { _id: { $in: libres } },
-      { status: 'outForDelivery' }
+      { status: 'En entrega' }
     );
 
     res.status(201).json(deliveries);
@@ -47,7 +46,7 @@ router.get(
   async (req, res) => {
     const list = await Delivery.find({
       driverId: req.user.id,
-      status: 'pending'
+      status: 'pendiente'
     }).populate({
       path: 'workId',
       populate: [
@@ -67,7 +66,7 @@ router.get(
   async (req, res) => {
     const list = await Delivery.find({
       driverId: req.user.id,
-      status: 'pending'
+      status: 'pendiente'
     }).populate({
       path: 'workId',
       populate: [
@@ -97,11 +96,11 @@ router.put(
     if (req.body.amountCollected != null) {
       d.amountCollected = req.body.amountCollected;
     }
-    d.status = 'delivered';
+    d.status = 'entregado';
     await d.save();
 
     // Actualizar estado del Work relacionado
-    d.workId.status = 'done';
+    d.workId.status = 'hecho';
     await d.workId.save();
 
     res.json({ message: 'Entregado', amountCollected: d.amountCollected });

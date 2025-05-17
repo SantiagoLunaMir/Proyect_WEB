@@ -1,7 +1,33 @@
-<h1>Iniciar sesión</h1>
-<form (ngSubmit)="submit()">
-  <label>Email: <input [(ngModel)]="email" name="email" required /></label>
-  <label>Password: <input type="password" [(ngModel)]="password" name="password" required /></label>
-  <button type="submit">Login</button>
-  <p *ngIf="error" style="color:red">{{ error }}</p>
-</form>
+<div class="login-container">
+  <h1 class="hero">Iniciar sesión</h1>
+
+  <form (ngSubmit)="submit()" class="login-form">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        [(ngModel)]="email"
+        name="email"
+        required
+        class="form-control"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        [(ngModel)]="password"
+        name="password"
+        required
+        class="form-control"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+
+    <p *ngIf="error" class="error">{{ error }}</p>
+  </form>
+</div>

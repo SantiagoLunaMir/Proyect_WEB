@@ -1,4 +1,4 @@
-//src/app/tech/delivery-list.components.ts
+// frontend/src/app/tech/delivery-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { FormsModule }   from '@angular/forms';

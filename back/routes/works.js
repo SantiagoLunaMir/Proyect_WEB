@@ -9,7 +9,6 @@ const validate              = require('../middleware/validate');
 
 const router = Router();
 
-/* --- Trabajos disponibles (repartidor/admin) --- */
 router.get(
   '/available',
   verifyToken,
@@ -23,7 +22,6 @@ router.get(
   }
 );
 
-/* --- Lista propia (technician/admin) --- */
 router.get(
   '/',
   verifyToken,
@@ -37,7 +35,6 @@ router.get(
   }
 );
 
-/* --- Crear nuevo trabajo (technician/admin) --- */
 router.post(
   '/',
   verifyToken,
@@ -48,15 +45,16 @@ router.post(
   }
 );
 
-/* --- Editar trabajo existente (technician/admin) --- */
 router.put(
   '/:id',
   verifyToken,
   requireRole(['technician','admin']),
   async (req, res) => {
-    // Mapear 'completed' a 'done' para evitar valor inválido en el schema
+    // Mapea algunos estados en inglés al enum inglés
     if (req.body.status === 'completed') {
       req.body.status = 'done';
+    } else if (req.body.status === 'in-progress') {
+      req.body.status = 'working';
     }
 
     const w = await Work.findByIdAndUpdate(
@@ -69,26 +67,13 @@ router.put(
   }
 );
 
-/* --- Eliminar trabajo (admin) --- */
-router.delete(
-  '/:id',
-  verifyToken,
-  requireRole(['admin']),
-  async (req, res) => {
-    const d = await Work.findByIdAndDelete(req.params.id);
-    if (!d) return res.status(404).json({ error: 'Work not found' });
-    res.json({ message: 'Deleted' });
-  }
-);
-
-/* --- Cambiar estado (pending→doing→done) (technician + admin) --- */
 router.patch(
   '/:id/status',
   verifyToken,
   requireRole(['technician','admin']),
   [
     param('id').isMongoId(),
-    body('status').isIn(['doing','done'])
+    body('status').isIn(['working', 'done'])
   ],
   validate,
   async (req, res) => {

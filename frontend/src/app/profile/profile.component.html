@@ -1,14 +1,13 @@
 <h2>Mi perfil</h2>
 
-<!-- Esperamos a que user esté definido antes de renderizar el formulario -->
 <form *ngIf="user" (ngSubmit)="save()" #f="ngForm">
   <label>Nombre:
     <input [(ngModel)]="form.name" name="name" required />
   </label>
 
   <label>Email:
-    <!-- Safe-navigation para no romper si aún no hay user -->
-    <input [value]="user?.email" disabled />
+    <!-- Quitamos el ?. innecesario -->
+    <input [value]="user.email" disabled />
   </label>
 
   <label>Teléfono:
