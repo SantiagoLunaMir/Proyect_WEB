@@ -1,55 +1,93 @@
 <!-- frontend/src/app/tech/work-form.component.html -->
-<h1>{{ editMode ? 'Editar' : 'Nuevo' }} Trabajo</h1>
-<form (ngSubmit)="submit()">
-  <label>
-    Pieza:
-    <select [(ngModel)]="form.pieceId" name="pieceId" required>
-      <option *ngFor="let p of pieces" [value]="p._id">{{ p.name }}</option>
-    </select>
-  </label>
+<div class="card" style="max-width:600px; margin:2rem auto; padding:1.5rem;">
+  <h1>{{ editMode ? 'Editar' : 'Nuevo' }} Trabajo</h1>
 
-  <label>
-    Doctor:
-    <select [(ngModel)]="form.doctorId" name="doctorId" required>
-      <option *ngFor="let d of doctors" [value]="d._id">{{ d.name }}</option>
-    </select>
-  </label>
+  <form (ngSubmit)="submit()" class="work-form">
+    <div class="form-group">
+      <label for="piece">Pieza:</label>
+      <select
+        id="piece"
+        [(ngModel)]="form.pieceId"
+        name="pieceId"
+        required
+        class="form-control"
+      >
+        <option *ngFor="let p of pieces" [value]="p._id">
+          {{ p.name }}
+        </option>
+      </select>
+    </div>
 
-  <label>
-    Fecha de entrega:
-    <input
-      type="date"
-      [(ngModel)]="form.deliveryDate"
-      name="deliveryDate"
-      required
-    />
-  </label>
+    <div class="form-group">
+      <label for="doctor">Doctor:</label>
+      <select
+        id="doctor"
+        [(ngModel)]="form.doctorId"
+        name="doctorId"
+        required
+        class="form-control"
+      >
+        <option *ngFor="let d of doctors" [value]="d._id">
+          {{ d.name }}
+        </option>
+      </select>
+    </div>
 
-  <label>
-    Tiempo producción:
-    <input
-      type="text"
-      [(ngModel)]="form.productionTime"
-      name="productionTime"
-      required
-    />
-  </label>
+    <div class="form-group">
+      <label for="deliveryDate">Fecha de entrega:</label>
+      <input
+        id="deliveryDate"
+        type="date"
+        [(ngModel)]="form.deliveryDate"
+        name="deliveryDate"
+        required
+        class="form-control"
+      />
+    </div>
 
-  <label>
-    Costo:
-    <input type="number" [(ngModel)]="form.cost" name="cost" required />
-  </label>
+    <div class="form-group">
+      <label for="productionTime">Tiempo producción:</label>
+      <input
+        id="productionTime"
+        type="text"
+        [(ngModel)]="form.productionTime"
+        name="productionTime"
+        required
+        class="form-control"
+      />
+    </div>
 
-  <label>
-    Estado:
-    <select [(ngModel)]="form.status" name="status">
-      <option value="pending">Pendiente</option>
-      <option value="inProgress">En Proceso</option>
-      <option value="completed">Completado</option>
-    </select>
-  </label>
+    <div class="form-group">
+      <label for="cost">Costo:</label>
+      <input
+        id="cost"
+        type="number"
+        [(ngModel)]="form.cost"
+        name="cost"
+        required
+        class="form-control"
+      />
+    </div>
 
-  <button type="submit">
-    {{ editMode ? 'Actualizar' : 'Crear' }}
-  </button>
-</form>
+    <div class="form-group">
+      <label for="status">Estado:</label>
+      <select
+        id="status"
+        [(ngModel)]="form.status"
+        name="status"
+        required
+        class="form-control"
+      >
+        <option value="pendiente">Pendiente</option>
+        <option value="enProgreso">En Progreso</option>
+        <option value="completado">Completado</option>
+      </select>
+    </div>
+
+    <div class="button-row">
+      <button type="submit" class="btn btn-primary">
+        {{ editMode ? 'Actualizar' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</div>

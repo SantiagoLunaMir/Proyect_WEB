@@ -1,7 +1,6 @@
-// frontend/src/app/admin/piece-form/piece-form.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CommonModule }       from '@angular/common';
+import { FormsModule }        from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Piece, PieceService } from '../../services/piece.service';
 
@@ -9,19 +8,20 @@ import { Piece, PieceService } from '../../services/piece.service';
   selector: 'app-piece-form',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './piece-form.component.html'
+  templateUrl: './piece-form.component.html',
+  styleUrls:   ['./piece-form.component.css']
 })
 export class PieceFormComponent implements OnInit {
-  form: Omit<Piece, '_id'|'images'|'createdAt'> = {
+  form = {
     name: '',
     description: '',
-    estimatedTime: '',
+    estimatedTime: 1,
     technicianContact: ''
   };
   existingImages: string[] = [];
   selectedFiles: File[] = [];
   editMode = false;
-  id?: string;
+  id!: string;
 
   constructor(
     private svc: PieceService,
@@ -30,19 +30,17 @@ export class PieceFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(p => {
-      if (p['id']) {
+    this.route.params.subscribe(params => {
+      if (params['id']) {
         this.editMode = true;
-        this.id = p['id'];
-        // <-- Aquí usamos `this.id!` para decir “confía, no es undefined”
-        this.svc.getPiece(this.id!).subscribe(piece => {
-          this.form = {
-            name: piece.name,
-            description: piece.description,
-            estimatedTime: piece.estimatedTime,
-            technicianContact: piece.technicianContact
-          };
-          this.existingImages = piece.images || [];
+        this.id = params['id'];
+        this.svc.getPiece(this.id).subscribe(piece => {
+          this.form.name               = piece.name;
+          const days                   = parseInt(piece.estimatedTime, 10);
+          this.form.estimatedTime      = isNaN(days) ? 1 : days;
+          this.form.description        = piece.description;
+          this.form.technicianContact  = piece.technicianContact;
+          this.existingImages          = piece.images ?? [];
         });
       }
     });
@@ -58,20 +56,15 @@ export class PieceFormComponent implements OnInit {
   submit(): void {
     const data = new FormData();
     data.append('name', this.form.name);
+    data.append('estimatedTime', `${this.form.estimatedTime} días`);
     data.append('description', this.form.description);
-    data.append('estimatedTime', this.form.estimatedTime);
     data.append('technicianContact', this.form.technicianContact);
-    // agregar archivos
     this.selectedFiles.forEach(file => data.append('images', file));
 
-    if (this.editMode && this.id) {
-      this.svc.updatePiece(this.id, data).subscribe(() =>
-        this.router.navigate(['/admin/pieces'])
-      );
-    } else {
-      this.svc.createPiece(data).subscribe(() =>
-        this.router.navigate(['/admin/pieces'])
-      );
-    }
+    const obs = this.editMode
+      ? this.svc.updatePiece(this.id, data)
+      : this.svc.createPiece(data);
+
+    obs.subscribe(() => this.router.navigate(['/admin/pieces']));
   }
 }

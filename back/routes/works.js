@@ -9,12 +9,13 @@ const validate              = require('../middleware/validate');
 
 const router = Router();
 
+// Trabajos disponibles (status en español)
 router.get(
   '/available',
   verifyToken,
   requireRole(['delivery','admin']),
   async (_req, res) => {
-    const taken = await Delivery.find({ status:'pending' }).distinct('workId');
+    const taken = await Delivery.find({ status:'pendiente' }).distinct('workId');
     const list  = await Work.find({ _id: { $nin: taken } })
       .populate('pieceId','name')
       .populate('doctorId','name address');
@@ -40,6 +41,7 @@ router.post(
   verifyToken,
   requireRole(['technician','admin']),
   async (req, res) => {
+    // Recibe status en español directamente
     const work = await Work.create({ ...req.body, technicianId: req.user.id });
     res.status(201).json(work);
   }
@@ -50,13 +52,7 @@ router.put(
   verifyToken,
   requireRole(['technician','admin']),
   async (req, res) => {
-    // Mapea algunos estados en inglés al enum inglés
-    if (req.body.status === 'completed') {
-      req.body.status = 'done';
-    } else if (req.body.status === 'in-progress') {
-      req.body.status = 'working';
-    }
-
+    // Recibe status en español directamente
     const w = await Work.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -73,7 +69,7 @@ router.patch(
   requireRole(['technician','admin']),
   [
     param('id').isMongoId(),
-    body('status').isIn(['working', 'done'])
+    body('status').isIn(['enProgreso','completado'])
   ],
   validate,
   async (req, res) => {
@@ -90,7 +86,7 @@ router.patch(
 
     work.status = req.body.status;
     await work.save();
-    res.json({ message: 'Status updated', status: work.status });
+    res.json({ message: 'Estado actualizado', status: work.status });
   }
 );
 

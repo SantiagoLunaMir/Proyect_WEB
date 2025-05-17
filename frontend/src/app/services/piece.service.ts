@@ -11,18 +11,15 @@ export interface Piece {
   technicianContact: string;
   images?: string[];
   createdAt?: string;
-
-  /* NUEVO */
   isPublic?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class PieceService {
-  private api = 'http://localhost:3000/api/pieces';
+  // Usamos proxy en Angular (ver proxy.conf.json)
+  private api = '/api/pieces';
 
   constructor(private http: HttpClient) {}
-
-  /* CRUD básico --------------------------------------------------------- */
 
   getPieces(): Observable<Piece[]> {
     return this.http.get<Piece[]>(this.api);
@@ -44,8 +41,6 @@ export class PieceService {
     return this.http.delete<{ message: string }>(`${this.api}/${id}`);
   }
 
-  /* NUEVO --------------------------------------------------------------- */
-  /** Cambia el estado de visibilidad en el catálogo público */
   togglePublish(id: string, isPublic: boolean): Observable<{ message: string; isPublic: boolean }> {
     return this.http.patch<{ message: string; isPublic: boolean }>(
       `${this.api}/${id}/publish`,

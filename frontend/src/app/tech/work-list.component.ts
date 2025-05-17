@@ -1,14 +1,14 @@
-// frontend/src/app/tech/work-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { CommonModule }      from '@angular/common';
+import { RouterModule }      from '@angular/router';
 import { Work, WorkService } from '../services/work.service';
 
 @Component({
   selector: 'app-work-list',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './work-list.component.html'
+  templateUrl: './work-list.component.html',
+  styleUrls:   ['./work-list.component.css']
 })
 export class WorkListComponent implements OnInit {
   works: Work[] = [];
@@ -19,7 +19,7 @@ export class WorkListComponent implements OnInit {
   }
 
   load(): void {
-    this.svc.getWorks().subscribe(data => this.works = data);
+    this.svc.getWorks().subscribe(data => (this.works = data));
   }
 
   delete(id: string): void {
